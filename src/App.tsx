@@ -10,6 +10,8 @@ import UserView from "./pages/UserView";
 import UserAdd from "./pages/UserAdd";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { AuthProvider } from "./contexts/AuthContext";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 
 function App() {
 	return (
@@ -18,6 +20,8 @@ function App() {
 				<Route path='/' element={<NavbarLayout />}>
 					<Route index element={<Home />} />
 					<Route path='login' element={<Login />} />
+					<Route path='forgot-password' element={<ForgotPassword />} />
+					<Route path='reset-password/:token' element={<ResetPassword />} />
 				</Route>
 				<Route path='/dashboard' element={<SidebarLayout />}>
 					<Route

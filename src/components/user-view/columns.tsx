@@ -1,9 +1,10 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { useState } from "react";
 import { RippleButton } from "../ui/ripple-button/ripple-button";
-import { Check, Clipboard, Pen } from "lucide-react";
+import { Check, Clipboard, Pen, Trash } from "lucide-react";
 import { Link } from "react-router";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import axios from 'axios';
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
@@ -14,6 +15,18 @@ export type User = {
 	email: string;
 	phone: string;
 };
+
+function handleUserDelete(id: string) {
+	axios.delete(`/api/users/delete/${id}`)
+		.then(response => {
+			console.log('User deleted successfully:', response.data);
+			// Reload the UI after deletion
+			window.location.reload();
+		})
+		.catch(error => {
+			console.error('There was a problem with the delete operation:', error);
+		});
+}
 
 export const columns: ColumnDef<User>[] = [
 	{
@@ -104,6 +117,17 @@ export const columns: ColumnDef<User>[] = [
 							</div>
 						</RippleButton>
 					</Link>
+					<RippleButton
+						variant={"destructive"}
+						size={"sm"}
+						onClick={() => handleUserDelete(id)}
+						className='h-auto border border-slate-200 px-2 py-1.5 dark:border-slate-700'
+					>
+						<div className='flex items-center gap-2'>
+							<Trash size={20} />
+							<span>Delete</span>
+						</div>
+					</RippleButton>
 				</div>
 			);
 		},
