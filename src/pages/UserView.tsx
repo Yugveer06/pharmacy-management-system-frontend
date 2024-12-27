@@ -1,9 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { columns } from "@/components/user-view/columns";
 import { DataTable } from "@/components/user-view/data-table";
 import { useLocation } from "react-router";
 import axios from "axios";
 import { motion as m } from "motion/react";
+import { LoaderCircle } from "lucide-react";
 
 function UserView() {
 	const [data, setData] = useState([]);
@@ -49,9 +50,9 @@ function UserView() {
 
 	return (
 		<m.div
-			initial={{ opacity: 0 }}
-			animate={{ opacity: 1 }}
-			exit={{ opacity: 0 }}
+			initial={{ opacity: 0, scale: 0.9 }}
+			animate={{ opacity: 1, scale: 1, transition: { ease: [0, 0.75, 0.25, 1] } }}
+			exit={{ opacity: 0, scale: 0.9, transition: { ease: [0.75, 0, 1, 0.25] } }}
 			className='flex-1 min-h-screen bg-gray-100 p-6'
 		>
 			<header className='text-left mb-12'>
@@ -60,7 +61,7 @@ function UserView() {
 			<main>
 				{isLoading ? (
 					<div className='flex justify-center items-center'>
-						<div className='animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900'></div>
+						<LoaderCircle className=' animate-spin' />
 					</div>
 				) : (
 					<DataTable columns={columns} data={data} />

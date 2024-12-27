@@ -1,5 +1,5 @@
 // NavbarLayout.tsx
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Link, Outlet } from "react-router";
 import { RippleButton } from "../ui/ripple-button/ripple-button";
 import { useScrollToHash } from "../../hooks/useScrollToHash";
@@ -11,7 +11,7 @@ const NavbarLayout: React.FC = () => {
 	const [isMenuOpen, setIsMenuOpen] = useState(false);
 
 	const linkStyle =
-		"relative after:absolute after:bg-white after:bottom-0 after:left-0 after:h-[2px] after:w-full after:origin-bottom-right after:scale-x-0 hover:after:origin-bottom-left hover:after:scale-x-100 after:transition-transform after:duration-300";
+		"active:scale-95 transition-all relative after:absolute after:bg-white after:bottom-0 after:left-0 after:h-[2px] after:w-full after:origin-bottom-right after:scale-x-0 hover:after:origin-bottom-left hover:after:scale-x-100 after:transition-transform after:duration-300";
 
 	const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
@@ -51,7 +51,7 @@ const NavbarLayout: React.FC = () => {
 					<Link to='/#services' preventScrollReset={true} className={linkStyle}>
 						Our Services
 					</Link>
-					<RippleButton className='p-0 bg-indigo-600 text-white rounded-full hover:bg-indigo-700 transition-colors duration-300'>
+					<RippleButton className='active:scale-95 transition-all p-0 bg-indigo-600 text-white rounded-full hover:bg-indigo-700 duration-300'>
 						{!isAuthenticated ? (
 							<Link to='/login' className='px-4 py-1.5' draggable={false} onClick={toggleMenu}>
 								Login
@@ -77,7 +77,7 @@ const NavbarLayout: React.FC = () => {
 							<Link to='/#services' preventScrollReset={true} className={linkStyle} onClick={toggleMenu}>
 								Our Services
 							</Link>
-							<RippleButton className='p-0 bg-indigo-600 text-white rounded-full hover:bg-indigo-700 transition-colors duration-300'>
+							<RippleButton className='active:scale-95 transition-all p-0 bg-indigo-600 text-white rounded-full hover:bg-indigo-700 duration-300'>
 								{!isAuthenticated ? (
 									<Link to='/login' className='px-4 py-1.5' draggable={false} onClick={toggleMenu}>
 										Login

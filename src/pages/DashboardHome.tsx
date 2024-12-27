@@ -3,6 +3,7 @@ import { motion as m } from "motion/react";
 import axios from "axios";
 import { RippleButton } from "@/components/ui/ripple-button/ripple-button";
 import { Link } from "react-router";
+import { LoaderCircle } from "lucide-react";
 
 interface CounterState {
 	orders: number;
@@ -18,6 +19,7 @@ interface User {
 }
 
 const DashboardHome: React.FC = () => {
+	const [userLoader, setUserLoader] = useState<boolean>(true);
 	const [stats, setStats] = useState<CounterState>({
 		orders: 0,
 		drugs: 0,
@@ -30,21 +32,23 @@ const DashboardHome: React.FC = () => {
 	useEffect(() => {
 		const fetchData = async () => {
 			try {
-				const response = await axios.get("/api/users");
-				const users: User[] = response.data;
+				const [usersResponse, drugsResponse] = await Promise.all([axios.get("/api/users"), axios.get("/api/drugs")]);
+
+				const users: User[] = usersResponse.data;
+				const drugs = drugsResponse.data;
 
 				setStats({
 					orders: 120, // Simulated data
-					drugs: 300, // Simulated data
+					drugs: drugs.length,
 					admins: users.filter(user => user.role_id === 1).length,
 					managers: users.filter(user => user.role_id === 2).length,
 					pharmacists: users.filter(user => user.role_id === 3).length,
 					salesmen: users.filter(user => user.role_id === 4).length,
 				});
-
-				console.log("Fetched user data:", users);
+				setUserLoader(false);
 			} catch (error) {
-				console.error("Error fetching user data:", error);
+				setUserLoader(false);
+				console.error("Error fetching data:", error);
 			}
 		};
 
@@ -53,9 +57,9 @@ const DashboardHome: React.FC = () => {
 
 	return (
 		<m.div
-			initial={{ opacity: 0 }}
-			animate={{ opacity: 1 }}
-			exit={{ opacity: 0 }}
+			initial={{ opacity: 0, scale: 0.9 }}
+			animate={{ opacity: 1, scale: 1, transition: { ease: [0, 0.75, 0.25, 1] } }}
+			exit={{ opacity: 0, scale: 0.9, transition: { ease: [0.75, 0, 1, 0.25] } }}
 			className='flex-1 min-h-screen bg-gray-100 p-6'
 		>
 			<header className='text-left mb-12'>
@@ -69,52 +73,68 @@ const DashboardHome: React.FC = () => {
 					<p className='text-3xl font-semibold text-gray-800'>{stats.orders}</p>
 				</div>
 				{/* Drugs */}
-				<div className='bg-white shadow-md p-6 rounded-lg border-l-4 border-purple-500'>
-					<h2 className='text-xl font-bold text-purple-500 mb-2'>Drugs</h2>
-					<p className='text-3xl font-semibold text-gray-800'>{stats.drugs}</p>
-				</div>
+				<RippleButton className='active:scale-[0.98] transition-all h-auto bg-white shadow-md hover:bg-slate-50 p-0 rounded-lg border-l-4 border-purple-500'>
+					<Link
+						to='/dashboard/drugs'
+						className='p-6 flex flex-col items-center justify-center w-full h-full'
+						draggable={false}
+					>
+						<h2 className='text-xl font-bold text-purple-500 mb-2'>Drugs</h2>
+						<p className='text-3xl font-semibold text-gray-800'>
+							{userLoader ? <LoaderCircle className='animate-spin' /> : <span>{stats.drugs}</span>}
+						</p>
+					</Link>
+				</RippleButton>
 				{/* Admins */}
-				<RippleButton className='h-auto bg-white shadow-md hover:bg-slate-50 p-0 rounded-lg border-l-4 border-red-500'>
+				<RippleButton className='active:scale-[0.98] transition-all h-auto bg-white shadow-md hover:bg-slate-50 p-0 rounded-lg border-l-4 border-red-500'>
 					<Link
 						to='/dashboard/admin/view'
 						className='p-6 flex flex-col items-center justify-center w-full h-full'
 						draggable={false}
 					>
 						<h2 className='text-xl font-bold text-red-500 mb-2'>Admins</h2>
-						<p className='text-3xl font-semibold text-gray-800'>{stats.admins}</p>
+						<p className='text-3xl font-semibold text-gray-800'>
+							{userLoader ? <LoaderCircle className='animate-spin' /> : <span>{stats.admins}</span>}
+						</p>
 					</Link>
 				</RippleButton>
 				{/* Managers */}
-				<RippleButton className='h-auto bg-white shadow-md hover:bg-slate-50 p-0 rounded-lg border-l-4 border-orange-500'>
+				<RippleButton className='active:scale-[0.98] transition-all h-auto bg-white shadow-md hover:bg-slate-50 p-0 rounded-lg border-l-4 border-orange-500'>
 					<Link
 						to='/dashboard/manager/view'
 						className='p-6 flex flex-col items-center justify-center w-full h-full'
 						draggable={false}
 					>
 						<h2 className='text-xl font-bold text-orange-500 mb-2'>Managers</h2>
-						<p className='text-3xl font-semibold text-gray-800'>{stats.managers}</p>
+						<p className='text-3xl font-semibold text-gray-800'>
+							{userLoader ? <LoaderCircle className='animate-spin' /> : <span>{stats.managers}</span>}
+						</p>
 					</Link>
 				</RippleButton>
 				{/* Pharmacists */}
-				<RippleButton className='h-auto bg-white shadow-md hover:bg-slate-50 p-0 rounded-lg border-l-4 border-teal-500'>
+				<RippleButton className='active:scale-[0.98] transition-all h-auto bg-white shadow-md hover:bg-slate-50 p-0 rounded-lg border-l-4 border-teal-500'>
 					<Link
 						to='/dashboard/pharmacist/view'
 						className='p-6 flex flex-col items-center justify-center w-full h-full'
 						draggable={false}
 					>
 						<h2 className='text-xl font-bold text-teal-500 mb-2'>Pharmacists</h2>
-						<p className='text-3xl font-semibold text-gray-800'>{stats.pharmacists}</p>
+						<p className='text-3xl font-semibold text-gray-800'>
+							{userLoader ? <LoaderCircle className='animate-spin' /> : <span>{stats.pharmacists}</span>}
+						</p>
 					</Link>
 				</RippleButton>
 				{/* Salesmen */}
-				<RippleButton className='h-auto bg-white shadow-md hover:bg-slate-50 p-0 rounded-lg border-l-4 border-green-500'>
+				<RippleButton className='active:scale-[0.98] transition-all h-auto bg-white shadow-md hover:bg-slate-50 p-0 rounded-lg border-l-4 border-green-500'>
 					<Link
 						to='/dashboard/salesman/view'
 						className='p-6 flex flex-col items-center justify-center w-full h-full'
 						draggable={false}
 					>
 						<h2 className='text-xl font-bold text-green-500 mb-2'>Salesmen</h2>
-						<p className='text-3xl font-semibold text-gray-800'>{stats.salesmen}</p>
+						<p className='text-3xl font-semibold text-gray-800'>
+							{userLoader ? <LoaderCircle className='animate-spin' /> : <span>{stats.salesmen}</span>}
+						</p>
 					</Link>
 				</RippleButton>
 			</main>

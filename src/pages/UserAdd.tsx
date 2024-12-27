@@ -130,9 +130,9 @@ function UserAdd() {
 
 	return (
 		<m.div
-			initial={{ opacity: 0 }}
-			animate={{ opacity: 1 }}
-			exit={{ opacity: 0 }}
+			initial={{ opacity: 0, scale: 0.9 }}
+			animate={{ opacity: 1, scale: 1, transition: { ease: [0, 0.75, 0.25, 1] } }}
+			exit={{ opacity: 0, scale: 0.9, transition: { ease: [0.75, 0, 1, 0.25] } }}
 			className='flex flex-1 flex-col bg-neutral-100 p-6'
 		>
 			<header className='text-left mb-12'>

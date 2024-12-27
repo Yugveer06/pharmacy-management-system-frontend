@@ -2,9 +2,9 @@ import { createContext, useContext, useState, ReactNode, useEffect } from "react
 import { AuthState, User } from "@/types/auth";
 
 interface AuthContextType {
-	isAuthenticated: boolean;
+	isAuthenticated: boolean | null;
 	user: User | null;
-	checkAuth: () => Promise<{ isAuthenticated: boolean; user: User | null }>;
+	checkAuth: () => Promise<{ isAuthenticated: boolean | null; user: User | null }>;
 	logout: () => void;
 }
 
@@ -14,7 +14,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 	const [authState, setAuthState] = useState<AuthState>({
 		user: null,
 		token: null,
-		isAuthenticated: false,
+		isAuthenticated: null,
 	});
 
 	const checkAuth = async () => {
@@ -49,6 +49,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 	}, []);
 
 	const logout = () => {
+		document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/";
 		setAuthState({ user: null, token: null, isAuthenticated: false });
 	};
 

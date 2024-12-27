@@ -5,6 +5,7 @@ import {
 	DollarSign,
 	LayoutGrid,
 	LoaderCircle,
+	Menu,
 	Pill,
 	Shield,
 	Tickets,
@@ -29,6 +30,7 @@ import {
 	SidebarMenuSubButton,
 	SidebarMenuSubItem,
 	SidebarProvider,
+	useSidebar,
 } from "../ui/sidebar";
 import { useAuth } from "@/contexts/AuthContext";
 import { UserRole } from "@/types/auth";
@@ -47,7 +49,7 @@ function SidebarLayout() {
 
 	return (
 		<>
-			<SidebarProvider className='w-screen'>
+			<SidebarProvider className='w-screen bg-gray-100'>
 				<Sidebar>
 					<SidebarHeader>
 						<SidebarMenu>
@@ -84,7 +86,7 @@ function SidebarLayout() {
 																	<SidebarMenuSubButton asChild>
 																		<RippleButton
 																			variant='ghost'
-																			className='font-normal w-full justify-start'
+																			className='active:scale-95 transition-all font-normal w-full justify-start'
 																		>
 																			<div className='flex gap-2 items-center'>
 																				{item.icon}
@@ -100,7 +102,7 @@ function SidebarLayout() {
 																				<SidebarMenuSubButton asChild>
 																					<RippleButton
 																						variant='ghost'
-																						className='p-0 font-normal w-full justify-start'
+																						className='active:scale-95 transition-all p-0 font-normal w-full justify-start'
 																					>
 																						<Link
 																							to={subItem.href}
@@ -122,7 +124,7 @@ function SidebarLayout() {
 															<SidebarMenuButton asChild>
 																<RippleButton
 																	variant='ghost'
-																	className='p-0 font-normal w-full justify-start'
+																	className='active:scale-95 transition-all p-0 font-normal w-full justify-start'
 																>
 																	<Link
 																		to={item.href || "#"}
@@ -161,6 +163,9 @@ function SidebarLayout() {
 										</SidebarMenuButton>
 									</DropdownMenuTrigger>
 									<DropdownMenuContent side='top' className='w-[--radix-popper-anchor-width]'>
+										<DropdownMenuItem asChild>
+											<Link to='/dashboard/profile'>Profile</Link>
+										</DropdownMenuItem>
 										<DropdownMenuItem onClick={logout}>
 											<span>Sign out</span>
 										</DropdownMenuItem>
@@ -171,9 +176,31 @@ function SidebarLayout() {
 					</SidebarFooter>
 				</Sidebar>
 
-				<Outlet />
+				<div className='flex flex-1 flex-col'>
+					<MobileHeader />
+					<main className='flex-1'>
+						<Outlet />
+					</main>
+				</div>
 			</SidebarProvider>
 		</>
+	);
+}
+
+// Add this new component
+function MobileHeader() {
+	const { toggleSidebar } = useSidebar();
+
+	return (
+		<div className='sticky top-0 z-10 flex h-16 items-center gap-4 border-b bg-background px-4 md:hidden'>
+			<RippleButton variant='ghost' size='icon' className='md:hidden' onClick={toggleSidebar}>
+				<div className='flex gap-2 items-center'>
+					<Menu className='h-6 w-6' />
+					<span className='sr-only'>Toggle Sidebar</span>
+				</div>
+			</RippleButton>
+			<h1 className='font-semibold'>PMS</h1>
+		</div>
 	);
 }
 

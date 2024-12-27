@@ -5,7 +5,7 @@ import { RippleButton } from "@/components/ui/ripple-button/ripple-button";
 import { useAuth } from "@/contexts/AuthContext";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
-import { ChevronLeft, Eye, EyeOff } from "lucide-react";
+import { ChevronLeft, Eye, EyeOff, LoaderCircle } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router";
@@ -31,6 +31,7 @@ const formSchema = z.object({
 function Login() {
 	const [showPassword, setShowPassword] = useState(false);
 	const [authError, setAuthError] = useState<string | null>(null);
+	const [loginLoading, setLoginLoading] = useState(false);
 
 	const { isAuthenticated } = useAuth();
 	const navigate = useNavigate();
@@ -51,6 +52,8 @@ function Login() {
 
 	async function onSubmit(values: z.infer<typeof formSchema>) {
 		try {
+			setLoginLoading(true);
+			setAuthError(null);
 			const response = await axios.post("/api/auth/login", {
 				email: values.email,
 				password: values.password,
@@ -59,6 +62,7 @@ function Login() {
 			console.log("Sign in successful:", response.data);
 			window.location.href = "/";
 		} catch (error) {
+			setLoginLoading(false);
 			if (axios.isAxiosError(error) && error.response) {
 				console.error("Sign in failed:", error.response.data.message);
 				setAuthError(error.response.data.message);
@@ -71,11 +75,11 @@ function Login() {
 
 	return (
 		<div className='h-screen w-screen flex items-center justify-center bg-neutral-100'>
-			<div className='flex w-[96vw] max-w-[512px] flex-col rounded-lg border border-neutral-200 bg-neutral-50'>
+			<div className='z-10 flex w-[96vw] max-w-[512px] flex-col rounded-lg border border-neutral-200 bg-neutral-50'>
 				<header className='flex items-center gap-4 rounded-t-lg bg-neutral-200/50 p-4'>
 					<RippleButton
 						variant={"outline"}
-						className='h-fit px-2 py-1 text-xs shadow-none hover:border-neutral-300'
+						className='active:scale-95 transition-all h-fit px-2 py-1 text-xs shadow-none hover:border-neutral-300'
 						onClick={() => navigate("/")}
 					>
 						<div className='flex items-center justify-center gap-2'>
@@ -115,7 +119,8 @@ function Login() {
 													{...field}
 												/>
 												<RippleButton
-													className='flex w-8 items-center justify-center'
+													type='button'
+													className='active:scale-95 transition-all flex w-8 items-center justify-center'
 													onClick={event => {
 														event.preventDefault();
 														setShowPassword(!showPassword);
@@ -126,14 +131,14 @@ function Login() {
 											</div>
 										</FormControl>
 										<FormMessage />
-										<Link to='/forgot-password' className='text-indigo-500 text-sm text-blue-500 hover:underline mt-2'>
+										<Link to='/forgot-password' className='text-indigo-500 text-sm  hover:underline mt-2'>
 											Forgot Password?
 										</Link>
 									</FormItem>
 								)}
 							/>
-							<RippleButton className='w-full' type='submit'>
-								Submit
+							<RippleButton className='active:scale-[0.98] transition-all w-full' type='submit'>
+								<div>{loginLoading ? <LoaderCircle className='animate-spin' /> : <span>Submit</span>}</div>
 							</RippleButton>
 						</form>
 					</Form>

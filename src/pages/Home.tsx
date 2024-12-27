@@ -1,4 +1,4 @@
-import { RippleButton } from "@/components/ui/ripple-button/ripple-button";
+import { MotionRippleButton, RippleButton } from "@/components/ui/ripple-button/ripple-button";
 import { Play } from "lucide-react";
 import { useScroll, useTransform } from "motion/react";
 import { Link } from "react-router";
@@ -33,15 +33,17 @@ function Home() {
 	const { isAuthenticated } = useAuth();
 	useScrollToHash();
 	const { scrollYProgress } = useScroll();
-	const y = useTransform(scrollYProgress, [0, 1], ["0%", "40% "]);
-	const overlayOpacity = useTransform(scrollYProgress, [0, 1], ["0%", "100% "]);
+	const scale = useTransform(scrollYProgress, [0, 1], [1, 1.1]);
+	const y = useTransform(scrollYProgress, [0, 1], ["0%", "40%"]);
+	const overlayOpacity = useTransform(scrollYProgress, [0, 1], ["0%", "100%"]);
+	const titleLetterSpacing = useTransform(scrollYProgress, [0, 1], ["0px", "12px"]);
 
 	return (
 		<div className='min-h-screen w-screen overflow-hidden'>
 			{/* Hero Section */}
 			<section id='home' className='relative min-h-screen overflow-hidden'>
 				<m.img
-					style={{ y }}
+					style={{ y, scale }}
 					src='/pharmacy-bg.jpg'
 					alt='Pharmacy Background'
 					className='absolute inset-0 w-full h-full object-cover'
@@ -49,22 +51,25 @@ function Home() {
 				<m.div style={{ opacity: overlayOpacity }} className='pointer-events-none absolute inset-0 bg-black'></m.div>
 				<div className='container relative mx-auto flex min-h-screen flex-col items-center justify-center gap-8 px-4 sm:px-6'>
 					<div className='text-center px-4'>
-						<h1 className='text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white'>
+						<m.h1
+							style={{ letterSpacing: titleLetterSpacing }}
+							className='text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white'
+						>
 							Pharmacy Management System
-						</h1>
+						</m.h1>
 						<p className='mt-4 text-base sm:text-lg md:text-xl text-white'>
 							Simplifying Medication Management for Better Health
 						</p>
 					</div>
 					<div className='flex items-center justify-center gap-4'>
-						<Link to={!isAuthenticated ? "/login" : "/dashboard"}>
-							<RippleButton className='rounded-lg bg-indigo-600 px-6 py-3 text-lg font-semibold hover:bg-indigo-700'>
-								<div className='flex gap-2 items-center'>
+						<RippleButton className='active:scale-95 transition-all group rounded-lg bg-indigo-600 px-6 py-3 hover:bg-indigo-700 p-0 h-fit border border-neutral-500/50'>
+							<Link className='px-2 py-1' to={!isAuthenticated ? "/login" : "/dashboard"} draggable='false'>
+								<div className='flex gap-2 items-center group-hover:gap-4 transition-all'>
 									<span>Get started</span>
-									<Play size={16} />
+									<Play className='max-w-3 max-h-3' />
 								</div>
-							</RippleButton>
-						</Link>
+							</Link>
+						</RippleButton>
 					</div>
 				</div>
 			</section>

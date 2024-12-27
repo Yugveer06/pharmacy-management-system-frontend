@@ -7,7 +7,7 @@ import axios from "axios";
 import { ChevronLeft } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { Link, useNavigate } from "react-router";
+import { useNavigate } from "react-router";
 import { z } from "zod";
 
 const formSchema = z.object({
@@ -50,7 +50,7 @@ function ForgotPassword() {
 				<header className='flex items-center gap-4 rounded-t-lg bg-neutral-200/50 p-4'>
 					<RippleButton
 						variant={"outline"}
-						className='h-fit px-2 py-1 text-xs shadow-none hover:border-neutral-300'
+						className='active:scale-95 transition-all h-fit px-2 py-1 text-xs shadow-none hover:border-neutral-300'
 						onClick={() => navigate("/login")}
 					>
 						<div className='flex items-center justify-center gap-2'>
@@ -76,7 +76,7 @@ function ForgotPassword() {
 									</FormItem>
 								)}
 							/>
-							<RippleButton className='w-full' type='submit'>
+							<RippleButton className='active:scale-[0.98] transition-all w-full' type='submit'>
 								Submit
 							</RippleButton>
 						</form>
