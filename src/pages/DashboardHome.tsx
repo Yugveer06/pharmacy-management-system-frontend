@@ -18,6 +18,11 @@ interface User {
 	role_id: number;
 }
 
+interface Order {
+	id: number;
+	// ...other order properties...
+}
+
 const DashboardHome: React.FC = () => {
 	const [userLoader, setUserLoader] = useState<boolean>(true);
 	const [stats, setStats] = useState<CounterState>({
@@ -32,13 +37,18 @@ const DashboardHome: React.FC = () => {
 	useEffect(() => {
 		const fetchData = async () => {
 			try {
-				const [usersResponse, drugsResponse] = await Promise.all([axios.get("/api/users"), axios.get("/api/drugs")]);
+				const [usersResponse, drugsResponse, ordersResponse] = await Promise.all([
+					axios.get("/api/users"),
+					axios.get("/api/drugs"),
+					axios.get("/api/orders")
+				]);
 
 				const users: User[] = usersResponse.data;
 				const drugs = drugsResponse.data;
+				const orders: Order[] = ordersResponse.data;
 
 				setStats({
-					orders: 120, // Simulated data
+					orders: orders.length,
 					drugs: drugs.length,
 					admins: users.filter(user => user.role_id === 1).length,
 					managers: users.filter(user => user.role_id === 2).length,
@@ -68,10 +78,18 @@ const DashboardHome: React.FC = () => {
 			</header>
 			<main className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6'>
 				{/* Orders */}
-				<div className='bg-white shadow-md p-6 rounded-lg border-l-4 border-blue-500'>
-					<h2 className='text-xl font-bold text-blue-500 mb-2'>Orders</h2>
-					<p className='text-3xl font-semibold text-gray-800'>{stats.orders}</p>
-				</div>
+				<RippleButton className='active:scale-[0.98] transition-all h-auto bg-white shadow-md hover:bg-slate-50 p-0 rounded-lg border-l-4 border-blue-500'>
+					<Link
+						to='/dashboard/orders'
+						className='p-6 flex flex-col items-center justify-center w-full h-full'
+						draggable={false}
+					>
+						<h2 className='text-xl font-bold text-blue-500 mb-2'>Orders</h2>
+						<p className='text-3xl font-semibold text-gray-800'>
+							{userLoader ? <LoaderCircle className='animate-spin' /> : <span>{stats.orders}</span>}
+						</p>
+					</Link>
+				</RippleButton>
 				{/* Drugs */}
 				<RippleButton className='active:scale-[0.98] transition-all h-auto bg-white shadow-md hover:bg-slate-50 p-0 rounded-lg border-l-4 border-purple-500'>
 					<Link
