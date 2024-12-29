@@ -20,9 +20,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 	const checkAuth = async () => {
 		try {
 			const response = await fetch("/api/auth/check", {
-				headers: {
-					Authorization: `Bearer ${authState.token}`,
-				},
+				credentials: "include",
 			});
 			const data = await response.json();
 
@@ -48,9 +46,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 		checkAuth();
 	}, []);
 
-	const logout = () => {
-		document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/";
-		setAuthState({ user: null, token: null, isAuthenticated: false });
+	const logout = async () => {
+		await fetch("/api/auth/logout", { method: "POST", credentials: "include" });
+		setAuthState({ isAuthenticated: false, user: null, token: null });
 	};
 
 	return (

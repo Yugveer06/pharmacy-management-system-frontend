@@ -217,6 +217,7 @@ export default function ProfileView() {
 											</AvatarFallback>
 										</Avatar>
 									</ImageViewer.Trigger>
+									<ImageViewer.Overlay className='backdrop-blur-[36px] bg-neutral-950/5' />
 									<ImageViewer.Content
 										title='Profile Picture'
 										description={user.f_name + " " + user.l_name}

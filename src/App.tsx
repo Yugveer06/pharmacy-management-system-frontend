@@ -1,22 +1,34 @@
 import { Route, Routes, useLocation } from "react-router";
+import { AnimatePresence } from "motion/react";
 
-import "./App.css";
-import Home from "@/pages/Home";
-import Login from "@/pages/Login";
+// Layouts
 import NavbarLayout from "@/components/layouts/NavbarLayout";
 import SidebarLayout from "@/components/layouts/SidebarLayout";
+
+// Components
+import ProtectedRoute from "@/components/ProtectedRoute";
+import { ThemeProvider } from "@/components/ThemeProvider";
+
+// Contexts
+import { AuthProvider } from "@/contexts/AuthContext";
+
+// Pages
+import Home from "@/pages/Home";
+import Login from "@/pages/Login";
 import DashboardHome from "@/pages/DashboardHome";
-import UserView from "./pages/UserView";
-import UserAdd from "./pages/UserAdd";
-import ProtectedRoute from "./components/ProtectedRoute";
-import { AuthProvider } from "./contexts/AuthContext";
-import ForgotPassword from "./pages/ForgotPassword";
-import ResetPassword from "./pages/ResetPassword";
-import ProfileView from "./pages/ProfileView";
-import { AnimatePresence } from "motion/react";
-import EditProfile from "./pages/EditProfile";
-import DrugsView from "./pages/DrugsView";
-import OrdersView from "./pages/OrdersView";
+import UserView from "@/pages/UserView";
+import UserAdd from "@/pages/UserAdd";
+import UserUpdate from "@/pages/UserUpdate";
+import ForgotPassword from "@/pages/ForgotPassword";
+import ResetPassword from "@/pages/ResetPassword";
+import ProfileView from "@/pages/ProfileView";
+import EditProfile from "@/pages/EditProfile";
+import DrugsView from "@/pages/DrugsView";
+import OrdersView from "@/pages/OrdersView";
+import NotFound from "@/pages/NotFound";
+
+// Styles
+import "./App.css";
 
 function App() {
 	const location = useLocation();
@@ -29,6 +41,7 @@ function App() {
 						<Route path='login' element={<Login />} />
 						<Route path='forgot-password' element={<ForgotPassword />} />
 						<Route path='reset-password/:token' element={<ResetPassword />} />
+						<Route path='*' element={<NotFound />} />
 					</Route>
 					<Route path='/dashboard' element={<SidebarLayout />}>
 						<Route
@@ -57,10 +70,10 @@ function App() {
 								}
 							/>
 							<Route
-								path='edit/:id'
+								path='update/:id'
 								element={
 									<ProtectedRoute>
-										<UserAdd />
+										<UserUpdate />
 									</ProtectedRoute>
 								}
 							/>
@@ -83,10 +96,10 @@ function App() {
 								}
 							/>
 							<Route
-								path='edit/:id'
+								path='update/:id'
 								element={
 									<ProtectedRoute>
-										<UserAdd />
+										<UserUpdate />
 									</ProtectedRoute>
 								}
 							/>
@@ -109,10 +122,10 @@ function App() {
 								}
 							/>
 							<Route
-								path='edit/:id'
+								path='update/:id'
 								element={
 									<ProtectedRoute>
-										<UserAdd />
+										<UserUpdate />
 									</ProtectedRoute>
 								}
 							/>
@@ -135,10 +148,10 @@ function App() {
 								}
 							/>
 							<Route
-								path='edit/:id'
+								path='update/:id'
 								element={
 									<ProtectedRoute>
-										<UserAdd />
+										<UserUpdate />
 									</ProtectedRoute>
 								}
 							/>
@@ -185,15 +198,6 @@ function App() {
 								element={
 									<ProtectedRoute>
 										<OrdersView />
-									</ProtectedRoute>
-								}
-							/>
-							<Route
-								path='edit/:id'
-								element={
-									<ProtectedRoute>
-										{/* <EditProfile /> */}
-										<span>Hi</span>
 									</ProtectedRoute>
 								}
 							/>

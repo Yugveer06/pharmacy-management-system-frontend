@@ -6,11 +6,11 @@ import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
 import { Eye, EyeOff, ImageIcon } from "lucide-react";
+import { motion as m } from "motion/react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
 import { z } from "zod";
-import { motion as m } from "motion/react";
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
@@ -32,10 +32,7 @@ const formSchema = z.object({
 	avatar: z
 		.custom<FileList>()
 		.refine(files => !files || files.length === 0 || files[0].size <= MAX_FILE_SIZE, "File size must be less than 5MB")
-		.refine(
-			files => !files || files.length === 0 || ACCEPTED_IMAGE_TYPES.includes(files[0]?.type),
-			"Only .jpg, .jpeg, .png and .webp files are accepted"
-		),
+		.refine(files => !files || files.length === 0 || ACCEPTED_IMAGE_TYPES.includes(files[0]?.type), "Only .jpg, .jpeg, .png and .webp files are accepted"),
 });
 
 function UserAdd() {
@@ -138,14 +135,14 @@ function UserAdd() {
 			<header className='text-left mb-12'>
 				<h1 className='text-2xl font-bold'>Add {getRoleDetails().title}</h1>
 			</header>
-			<div className='flex w-[96vw] max-w-[512px] flex-col rounded-lg border border-neutral-200 bg-neutral-50'>
-				<header className='flex items-center gap-4 rounded-t-lg bg-neutral-200/50 p-4'>
-					<h1 className='text-xl font-semibold'>Add new {getRoleDetails().name}</h1>
+			<div className='flex w-full max-w-[512px] flex-col rounded-lg border border-neutral-200 bg-neutral-50'>
+				<header className='flex items-center gap-4 rounded-t-lg bg-neutral-200/50 p-3 sm:p-4'>
+					<h1 className='text-lg sm:text-xl font-semibold'>Add new {getRoleDetails().name}</h1>
 				</header>
-				<main className='p-4'>
+				<main className='p-3 sm:p-4'>
 					<Form {...form}>
 						<form onSubmit={form.handleSubmit(onSubmit)} className='space-y-4'>
-							<div className='flex gap-4'>
+							<div className='flex flex-col sm:flex-row gap-4'>
 								<FormField
 									control={form.control}
 									name='f_name'
@@ -231,26 +228,22 @@ function UserAdd() {
 								control={form.control}
 								name='avatar'
 								render={({ field: { onChange, value, ...field } }) => (
-									<FormItem>
+									<FormItem className='flex flex-col items-start justify-center flex-1'>
 										<FormLabel>Avatar</FormLabel>
 										<FormControl>
 											<div className='flex flex-col gap-4'>
 												<Label
 													htmlFor='avatar'
 													className={cn(
-														"flex h-32 w-32 cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed",
+														"flex h-24 w-24 sm:h-32 sm:w-32 cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed",
 														"hover:border-neutral-400 hover:bg-neutral-100"
 													)}
 												>
 													{imagePreview ? (
-														<img
-															src={imagePreview}
-															alt='Preview'
-															className='h-full w-full rounded-lg object-cover'
-														/>
+														<img src={imagePreview} alt='Preview' className='h-full w-full rounded-lg object-cover' />
 													) : (
 														<div className='flex flex-col items-center justify-center text-neutral-500'>
-															<ImageIcon className='h-8 w-8' />
+															<ImageIcon className='h-6 w-6 sm:h-8 sm:w-8' />
 															<span className='text-xs'>Upload image</span>
 														</div>
 													)}
@@ -273,7 +266,7 @@ function UserAdd() {
 								)}
 							/>
 
-							<RippleButton className='w-full' type='submit'>
+							<RippleButton className='w-full h-9 sm:h-10' type='submit'>
 								Create User
 							</RippleButton>
 						</form>

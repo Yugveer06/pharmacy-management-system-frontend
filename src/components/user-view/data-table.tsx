@@ -1,6 +1,7 @@
 import { ColumnDef, flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface DataTableProps<TData, TValue> {
 	columns: ColumnDef<TData, TValue>[];
@@ -8,9 +9,16 @@ interface DataTableProps<TData, TValue> {
 }
 
 export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData, TValue>) {
+	const { user } = useAuth();
 	const table = useReactTable({
 		data,
 		columns,
+		state: {
+			columnVisibility: {
+				role: false,
+				action: user?.role_id === 1,
+			},
+		},
 		getCoreRowModel: getCoreRowModel(),
 	});
 
@@ -21,13 +29,7 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
 					{table.getHeaderGroups().map(headerGroup => (
 						<TableRow key={headerGroup.id}>
 							{headerGroup.headers.map(header => {
-								return (
-									<TableHead key={header.id}>
-										{header.isPlaceholder
-											? null
-											: flexRender(header.column.columnDef.header, header.getContext())}
-									</TableHead>
-								);
+								return <TableHead key={header.id}>{header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}</TableHead>;
 							})}
 						</TableRow>
 					))}
@@ -37,9 +39,7 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
 						table.getRowModel().rows.map(row => (
 							<TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
 								{row.getVisibleCells().map(cell => (
-									<TableCell key={cell.id}>
-										{flexRender(cell.column.columnDef.cell, cell.getContext())}
-									</TableCell>
+									<TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
 								))}
 							</TableRow>
 						))

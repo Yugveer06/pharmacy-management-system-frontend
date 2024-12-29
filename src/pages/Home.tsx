@@ -1,4 +1,4 @@
-import { MotionRippleButton, RippleButton } from "@/components/ui/ripple-button/ripple-button";
+import { RippleButton } from "@/components/ui/ripple-button/ripple-button";
 import { Play } from "lucide-react";
 import { useScroll, useTransform } from "motion/react";
 import { Link } from "react-router";
@@ -42,24 +42,14 @@ function Home() {
 		<div className='min-h-screen w-screen overflow-hidden'>
 			{/* Hero Section */}
 			<section id='home' className='relative min-h-screen overflow-hidden'>
-				<m.img
-					style={{ y, scale }}
-					src='/pharmacy-bg.jpg'
-					alt='Pharmacy Background'
-					className='absolute inset-0 w-full h-full object-cover'
-				/>
+				<m.img style={{ y, scale }} src='/pharmacy-bg.jpg' alt='Pharmacy Background' className='absolute inset-0 w-full h-full object-cover' />
 				<m.div style={{ opacity: overlayOpacity }} className='pointer-events-none absolute inset-0 bg-black'></m.div>
 				<div className='container relative mx-auto flex min-h-screen flex-col items-center justify-center gap-8 px-4 sm:px-6'>
 					<div className='text-center px-4'>
-						<m.h1
-							style={{ letterSpacing: titleLetterSpacing }}
-							className='text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white'
-						>
+						<m.h1 style={{ letterSpacing: titleLetterSpacing }} className='text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white'>
 							Pharmacy Management System
 						</m.h1>
-						<p className='mt-4 text-base sm:text-lg md:text-xl text-white'>
-							Simplifying Medication Management for Better Health
-						</p>
+						<p className='mt-4 text-base sm:text-lg md:text-xl text-white'>Simplifying Medication Management for Better Health</p>
 					</div>
 					<div className='flex items-center justify-center gap-4'>
 						<RippleButton className='active:scale-95 transition-all group rounded-lg bg-indigo-600 px-6 py-3 hover:bg-indigo-700 p-0 h-fit border border-neutral-500/50'>
@@ -77,30 +67,21 @@ function Home() {
 			{/* About Section */}
 			<section id='about' className='z-10 py-16 sm:py-20 bg-gray-100'>
 				<div className='container mx-auto px-4 sm:px-6 lg:px-8'>
-					<h2 className='text-2xl sm:text-3xl md:text-4xl font-bold text-center text-indigo-600 mb-8 sm:mb-12'>
-						About Us
-					</h2>
+					<h2 className='text-2xl sm:text-3xl md:text-4xl font-bold text-center text-indigo-600 mb-8 sm:mb-12'>About Us</h2>
 					<div className='grid gap-6 md:grid-cols-2 lg:grid-cols-3'>
 						<div className='bg-white p-6 rounded-lg shadow-md'>
 							<h3 className='text-xl font-semibold text-indigo-600 mb-4'>Who We Are</h3>
 							<p className='text-gray-700'>
-								A comprehensive solution designed to streamline pharmacy operations, ensuring seamless
-								experiences for pharmacists, store owners, and customers.
+								A comprehensive solution designed to streamline pharmacy operations, ensuring seamless experiences for pharmacists, store owners, and customers.
 							</p>
 						</div>
 						<div className='bg-white p-6 rounded-lg shadow-md'>
 							<h3 className='text-xl font-semibold text-indigo-600 mb-4'>Our Mission</h3>
-							<p className='text-gray-700'>
-								To empower pharmacies with modern technology, improve operational efficiency, and deliver
-								excellent service to customers.
-							</p>
+							<p className='text-gray-700'>To empower pharmacies with modern technology, improve operational efficiency, and deliver excellent service to customers.</p>
 						</div>
 						<div className='bg-white p-6 rounded-lg shadow-md'>
 							<h3 className='text-xl font-semibold text-indigo-600 mb-4'>Why Choose Us</h3>
-							<p className='text-gray-700'>
-								We provide reliable and efficient systems that simplify inventory management and enhance
-								business operations.
-							</p>
+							<p className='text-gray-700'>We provide reliable and efficient systems that simplify inventory management and enhance business operations.</p>
 						</div>
 					</div>
 				</div>
@@ -109,15 +90,10 @@ function Home() {
 			{/* Services Section */}
 			<section id='services' className='z-10 py-16 sm:py-20 bg-white'>
 				<div className='container mx-auto px-4 sm:px-6 lg:px-8'>
-					<h2 className='text-2xl sm:text-3xl md:text-4xl font-bold text-center text-indigo-600 mb-8 sm:mb-12'>
-						Our Services
-					</h2>
+					<h2 className='text-2xl sm:text-3xl md:text-4xl font-bold text-center text-indigo-600 mb-8 sm:mb-12'>Our Services</h2>
 					<div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
 						{services.map((service, index) => (
-							<div
-								key={index}
-								className='bg-indigo-50 border-l-4 border-indigo-600 p-4 sm:p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow'
-							>
+							<div key={index} className='bg-indigo-50 border-l-4 border-indigo-600 p-4 sm:p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow'>
 								<div className='flex items-center space-x-4 mb-4'>
 									<span className='text-3xl'>{service.emoji}</span>
 									<h3 className='text-xl font-bold text-indigo-600'>{service.title}</h3>
@@ -134,10 +110,7 @@ function Home() {
 					<div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8'>
 						<div>
 							<h3 className='text-lg font-semibold mb-4'>About PMS</h3>
-							<p className='text-gray-400 text-sm'>
-								Your trusted partner in pharmacy management solutions, making medication tracking and inventory
-								management easier.
-							</p>
+							<p className='text-gray-400 text-sm'>Your trusted partner in pharmacy management solutions, making medication tracking and inventory management easier.</p>
 						</div>
 						<div>
 							<h3 className='text-lg font-semibold mb-4'>Quick Links</h3>
@@ -176,9 +149,7 @@ function Home() {
 							</ul>
 						</div>
 					</div>
-					<div className='border-t border-gray-700 mt-8 pt-8 text-center text-sm text-gray-400'>
-						&copy; {new Date().getFullYear()} Pharmacy Management System. All rights reserved.
-					</div>
+					<div className='border-t border-gray-700 mt-8 pt-8 text-center text-sm text-gray-400'>&copy; {new Date().getFullYear()} Pharmacy Management System. All rights reserved.</div>
 				</div>
 			</footer>
 		</div>

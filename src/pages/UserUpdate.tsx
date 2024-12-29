@@ -2,16 +2,17 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RippleButton } from "@/components/ui/ripple-button/ripple-button";
-import { useAuth } from "@/contexts/AuthContext";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
-import { ChevronLeft, Eye, EyeOff, ImageIcon, LoaderCircle } from "lucide-react";
+import { ChevronLeft, ImageIcon, LoaderCircle } from "lucide-react";
 import { motion as m } from "motion/react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import { z } from "zod";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import AuthError from "@/components/AuthError";
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
 const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
@@ -23,24 +24,28 @@ const formSchema = z.object({
 	phone: z.string().regex(/^\+?[\d\s-]{10,}$/, {
 		message: "Please enter a valid phone number",
 	}),
-	oldPassword: z.string().optional(),
-	password: z.string().optional(),
+	password: z
+		.string()
+		.regex(/[A-Z]/, { message: "Password must contain at least one uppercase letter" })
+		.regex(/[a-z]/, { message: "Password must contain at least one lowercase letter" })
+		.regex(/\d/, { message: "Password must contain at least one number" })
+		.regex(/[@$!%*?&]/, { message: "Password must contain at least one special character (@$!%*?&)" })
+		.optional()
+		.or(z.literal("")),
 	avatar: z
 		.custom<FileList>()
 		.refine(files => !files || files.length === 0 || files[0].size <= MAX_FILE_SIZE, "File size must be less than 5MB")
-		.refine(files => !files || files.length === 0 || ACCEPTED_IMAGE_TYPES.includes(files[0]?.type), "Only .jpg, .jpeg, .png and .webp files are accepted")
-		.optional(),
+		.refine(files => !files || files.length === 0 || ACCEPTED_IMAGE_TYPES.includes(files[0]?.type), "Only .jpg, .jpeg, .png and .webp files are accepted"),
+	role_id: z.string(),
 });
 
-function EditProfile() {
-	const { user } = useAuth();
-	const [showOldPassword, setShowOldPassword] = useState(false);
-	const [showNewPassword, setShowNewPassword] = useState(false);
+function UserUpdate() {
+	const { id } = useParams();
+	const [error, setError] = useState<string | null>(null);
 	const [imagePreview, setImagePreview] = useState<string | null>(null);
 	const [isLoading, setIsLoading] = useState(true);
-	const [isUpdating, setIsUpdating] = useState(false);
-
 	const navigate = useNavigate();
+	const [isUpdating, setIsUpdating] = useState(false);
 
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
@@ -49,54 +54,52 @@ function EditProfile() {
 			l_name: "",
 			email: "",
 			phone: "",
-			oldPassword: "",
 			password: "",
+			avatar: undefined,
+			role_id: "",
 		},
 	});
 
 	useEffect(() => {
 		const fetchUserData = async () => {
-			if (user && user.id) {
-				try {
-					const token = document.cookie
-						.split("; ")
-						.find(row => row.startsWith("token="))
-						?.split("=")[1];
+			try {
+				const token = document.cookie
+					.split("; ")
+					.find(row => row.startsWith("token="))
+					?.split("=")[1];
 
-					const response = await axios.get(`/api/users/id/${user.id}`, {
-						headers: {
-							Authorization: `Bearer ${token}`,
-						},
+				const response = await axios.get(`/api/users/id/${id}`, {
+					headers: {
+						Authorization: `Bearer ${token}`,
+					},
+				});
+
+				if (response.data) {
+					const userData = response.data;
+					form.reset({
+						f_name: userData.f_name,
+						l_name: userData.l_name,
+						email: userData.email,
+						phone: userData.phone,
+						role_id: userData.role_id.toString(),
 					});
-
-					if (response.data) {
-						const userData = response.data;
-						form.reset({
-							f_name: userData.f_name,
-							l_name: userData.l_name,
-							email: userData.email,
-							phone: userData.phone,
-							password: "",
-							oldPassword: "",
-						});
-						if (userData.avatar) {
-							setImagePreview(userData.avatar);
-						}
+					if (userData.avatar) {
+						setImagePreview(userData.avatar);
 					}
-				} catch (error) {
-					if (axios.isAxiosError(error) && error.response) {
-						console.error(error.response.data.message);
-					} else {
-						console.error("Failed to load profile data");
-					}
-				} finally {
-					setIsLoading(false);
 				}
+			} catch (error) {
+				if (axios.isAxiosError(error) && error.response) {
+					console.error(error.response.data.message);
+				} else {
+					console.error("Failed to load profile data");
+				}
+			} finally {
+				setIsLoading(false);
 			}
 		};
 
 		fetchUserData();
-	}, [form, user]);
+	}, [form]);
 
 	const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const file = e.target.files?.[0];
@@ -121,15 +124,14 @@ function EditProfile() {
 	async function onSubmit(values: z.infer<typeof formSchema>) {
 		try {
 			setIsUpdating(true);
+
 			const formData = new FormData();
 			formData.append("f_name", values.f_name);
 			formData.append("l_name", values.l_name);
 			formData.append("email", values.email);
 			formData.append("phone", values.phone);
-			if (values.oldPassword && values.password) {
-				formData.append("oldPassword", values.oldPassword);
-				formData.append("password", values.password);
-			}
+			formData.append("role_id", values.role_id);
+
 			if (values.avatar?.[0]) {
 				formData.append("avatar", values.avatar[0]);
 			}
@@ -139,26 +141,40 @@ function EditProfile() {
 				.find(row => row.startsWith("token="))
 				?.split("=")[1];
 
-			const response = await axios.put("/api/auth/edit-profile", formData, {
+			await axios.put(`/api/auth/update-user/${id}`, formData, {
 				headers: {
 					"Content-Type": "multipart/form-data",
 					Authorization: `Bearer ${token}`,
 				},
 			});
 
-			if (response.data.success) {
-				navigate("/dashboard/profile");
-			} else {
-				console.log(response.data.message || "Failed to update profile");
-			}
+			navigate(`/dashboard/${getRoleDetails().name}/view`);
 		} catch (error) {
-			setIsUpdating(false);
 			if (axios.isAxiosError(error) && error.response) {
-				console.log(error.response.data.message);
+				setError(error.response.data.message);
 			} else {
-				console.log("An error occurred. Please try again later.");
+				setError("An error occurred. Please try again later.");
 			}
+		} finally {
+			setIsUpdating(false);
 		}
+	}
+
+	const getRoleDetails = () => {
+		const path = location.pathname;
+		if (path.includes("/admin")) return { id: 1, name: "admin", title: "Admin" };
+		if (path.includes("/manager")) return { id: 2, name: "manager", title: "Manager" };
+		if (path.includes("/pharmacist")) return { id: 3, name: "pharmacist", title: "Pharmacist" };
+		if (path.includes("/salesman")) return { id: 4, name: "salesman", title: "Salesman" };
+		return { id: 5, name: "user", title: "Users" };
+	};
+
+	if (isLoading) {
+		return (
+			<div className='flex items-center justify-center h-screen'>
+				<LoaderCircle className='animate-spin' />
+			</div>
+		);
 	}
 
 	return (
@@ -166,14 +182,14 @@ function EditProfile() {
 			initial={{ opacity: 0, scale: 0.9 }}
 			animate={{ opacity: 1, scale: 1, transition: { ease: [0, 0.75, 0.25, 1] } }}
 			exit={{ opacity: 0, scale: 0.9, transition: { ease: [0.75, 0, 1, 0.25] } }}
-			className='flex flex-1 flex-col bg-neutral-100 p-2 p-6'
+			className='flex flex-1 flex-col bg-neutral-100 p-6'
 		>
 			<header className='text-left mb-12'>
 				<h1 className='text-2xl font-bold'>Edit Profile</h1>
 			</header>
 			{isLoading ? (
 				<div className='flex justify-center items-center'>
-					<LoaderCircle className='animate-spin' />
+					<LoaderCircle className=' animate-spin' />
 				</div>
 			) : (
 				<div className='flex w-full max-w-[512px] flex-col rounded-lg border border-neutral-200 bg-neutral-50'>
@@ -181,7 +197,7 @@ function EditProfile() {
 						<RippleButton
 							variant={"outline"}
 							className='active:scale-95 transition-all h-fit px-2 py-1 text-xs shadow-none hover:border-neutral-300'
-							onClick={() => navigate("/dashboard/profile")}
+							onClick={() => navigate(`/dashboard/${getRoleDetails().name}/view`)}
 						>
 							<div className='flex items-center justify-center gap-2'>
 								<ChevronLeft size={8} />
@@ -250,59 +266,30 @@ function EditProfile() {
 										</FormItem>
 									)}
 								/>
-
-								{/* Old Password field */}
+								{/* Role Selector */}
 								<FormField
 									control={form.control}
-									name='oldPassword'
+									name='role_id'
 									render={({ field }) => (
 										<FormItem className='flex flex-col items-start justify-center flex-1'>
-											<FormLabel>Current Password (Leave blank if you don't want to change)</FormLabel>
-											<FormControl>
-												<div className='relative flex w-full gap-1'>
-													<Input type={showOldPassword ? "text" : "password"} {...field} />
-													<RippleButton
-														className='active:scale-95 transition-all flex w-8 items-center justify-center'
-														onClick={e => {
-															e.preventDefault();
-															setShowOldPassword(!showOldPassword);
-														}}
-													>
-														{showOldPassword ? <Eye size={16} /> : <EyeOff size={16} />}
-													</RippleButton>
-												</div>
-											</FormControl>
+											<FormLabel>Role</FormLabel>
+											<Select onValueChange={field.onChange} defaultValue={field.value}>
+												<FormControl>
+													<SelectTrigger>
+														<SelectValue placeholder='Select a role' />
+													</SelectTrigger>
+												</FormControl>
+												<SelectContent>
+													<SelectItem value='1'>Admin</SelectItem>
+													<SelectItem value='2'>Manager</SelectItem>
+													<SelectItem value='3'>Pharmacist</SelectItem>
+													<SelectItem value='4'>Salesman</SelectItem>
+												</SelectContent>
+											</Select>
 											<FormMessage />
 										</FormItem>
 									)}
 								/>
-
-								{/* New Password field */}
-								<FormField
-									control={form.control}
-									name='password'
-									render={({ field }) => (
-										<FormItem className='flex flex-col items-start justify-center flex-1'>
-											<FormLabel>New Password</FormLabel>
-											<FormControl>
-												<div className='relative flex w-full gap-1'>
-													<Input type={showNewPassword ? "text" : "password"} {...field} />
-													<RippleButton
-														className='active:scale-95 transition-all flex w-8 items-center justify-center'
-														onClick={e => {
-															e.preventDefault();
-															setShowNewPassword(!showNewPassword);
-														}}
-													>
-														{showNewPassword ? <Eye size={16} /> : <EyeOff size={16} />}
-													</RippleButton>
-												</div>
-											</FormControl>
-											<FormMessage />
-										</FormItem>
-									)}
-								/>
-
 								{/* Avatar field */}
 								<FormField
 									control={form.control}
@@ -346,8 +333,8 @@ function EditProfile() {
 									)}
 								/>
 
-								<RippleButton className='w-full h-9 sm:h-10' type='submit'>
-									{isUpdating ? <LoaderCircle className='animate-spin' /> : "Update Profile"}
+								<RippleButton className='w-full h-9 sm:h-10' type='submit' disabled={isUpdating}>
+									{isUpdating ? <LoaderCircle className='animate-spin' /> : "Update User"}
 								</RippleButton>
 							</form>
 						</Form>
@@ -358,4 +345,4 @@ function EditProfile() {
 	);
 }
 
-export default EditProfile;
+export default UserUpdate;

@@ -1,20 +1,12 @@
-import {
-	Bandage,
-	Briefcase,
-	ChevronUp,
-	DollarSign,
-	LayoutGrid,
-	LoaderCircle,
-	Menu,
-	Pill,
-	Shield,
-	Tickets,
-	User2,
-	UserPlus,
-	Users,
-} from "lucide-react";
-import { Link, Outlet } from "react-router";
+import { useAuth } from "@/contexts/AuthContext";
+import { cn } from "@/lib/utils";
+import { UserRole } from "@/types/auth";
+import { Bandage, Briefcase, ChevronUp, DollarSign, LayoutGrid, LoaderCircle, Menu, Pill, Shield, Tickets, User2, UserPlus, Users } from "lucide-react";
+import { motion as m } from "motion/react";
+import { Link, Outlet, useLocation } from "react-router";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../ui/collapsible";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
+import { RippleButton } from "../ui/ripple-button/ripple-button";
 import {
 	Sidebar,
 	SidebarContent,
@@ -32,13 +24,10 @@ import {
 	SidebarProvider,
 	useSidebar,
 } from "../ui/sidebar";
-import { useAuth } from "@/contexts/AuthContext";
-import { UserRole } from "@/types/auth";
-import { RippleButton } from "../ui/ripple-button/ripple-button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
 
 function SidebarLayout() {
 	const { user, logout } = useAuth();
+	const location = useLocation();
 
 	const hasPermission = (allowedRoles?: UserRole[]) => {
 		if (!allowedRoles || allowedRoles.length === 0) return true;
@@ -54,7 +43,10 @@ function SidebarLayout() {
 					<SidebarHeader>
 						<SidebarMenu>
 							<SidebarMenuItem>
-								<h1 className='text-xl'>PMS</h1>
+								<Link to='/' className='flex items-center gap-2 p-2 rounded'>
+									<img src='/logo.png' alt='PMS Logo' className='w-8' />
+									<h1 className='text-lg font-bold text-indigo-800'>PMS</h1>
+								</Link>
 							</SidebarMenuItem>
 						</SidebarMenu>
 					</SidebarHeader>
@@ -70,9 +62,7 @@ function SidebarLayout() {
 									<SidebarGroupContent>
 										<SidebarMenu>
 											{filteredItems.map(item => {
-												const filteredSubitems = item.subitems?.filter(subitem =>
-													hasPermission(subitem.allowedRoles)
-												);
+												const filteredSubitems = item.subitems?.filter(subitem => hasPermission(subitem.allowedRoles));
 
 												if (item.subitems && (!filteredSubitems || filteredSubitems.length === 0)) {
 													return null;
@@ -81,13 +71,13 @@ function SidebarLayout() {
 												return (
 													<SidebarMenuItem key={item.href || item.title}>
 														{item.subitems ? (
-															<Collapsible defaultOpen className='group/collapsible'>
+															<Collapsible
+																defaultOpen
+																className={cn("group/collapsible rounded-md", location.pathname.includes(item.id) && "bg-indigo-100/20 border border-indigo-50")}
+															>
 																<CollapsibleTrigger asChild>
 																	<SidebarMenuSubButton asChild>
-																		<RippleButton
-																			variant='ghost'
-																			className='active:scale-95 transition-all font-normal w-full justify-start'
-																		>
+																		<RippleButton variant='ghost' className='active:scale-95 transition-all font-normal w-full justify-start'>
 																			<div className='flex gap-2 items-center'>
 																				{item.icon}
 																				<span>{item.title}</span>
@@ -95,19 +85,23 @@ function SidebarLayout() {
 																		</RippleButton>
 																	</SidebarMenuSubButton>
 																</CollapsibleTrigger>
+																{location.pathname.includes(item.id) && (
+																	<m.div layoutId='activeItemIndicator' className='rounded-full absolute top-0 -left-1.5 h-full w-0.5 bg-indigo-500' />
+																)}
 																<CollapsibleContent className='space-y-1 flex flex-col'>
 																	<SidebarMenuSub>
 																		{filteredSubitems!.map(subItem => (
-																			<SidebarMenuSubItem key={subItem.href}>
+																			<SidebarMenuSubItem className='relative' key={subItem.href}>
 																				<SidebarMenuSubButton asChild>
 																					<RippleButton
 																						variant='ghost'
-																						className='active:scale-95 transition-all p-0 font-normal w-full justify-start'
+																						className={cn(
+																							"active:scale-95 transition-all p-0 font-normal w-full justify-start",
+																							location.pathname === subItem.href && "bg-indigo-100/40 border border-indigo-100",
+																							location.pathname.includes(item.id) && "hover:bg-indigo-100"
+																						)}
 																					>
-																						<Link
-																							to={subItem.href}
-																							className='flex items-center justify-start p-2 w-full h-full'
-																						>
+																						<Link to={subItem.href} className='relative flex items-center justify-start p-2 w-full h-full'>
 																							<div className='flex gap-2 items-center'>
 																								{subItem.icon}
 																								<span>{subItem.title}</span>
@@ -115,6 +109,15 @@ function SidebarLayout() {
 																						</Link>
 																					</RippleButton>
 																				</SidebarMenuSubButton>
+																				{location.pathname === subItem.href && (
+																					<m.div
+																						initial={{ opacity: 0 }}
+																						animate={{ opacity: 1 }}
+																						exit={{ opacity: 0 }}
+																						layoutId={`activeSubItem${filteredSubitems?.[0]?.id || ""}Indicator`}
+																						className='rounded-full absolute top-0 -left-3 h-full w-0.5 bg-indigo-500'
+																					/>
+																				)}
 																			</SidebarMenuSubItem>
 																		))}
 																	</SidebarMenuSub>
@@ -122,20 +125,25 @@ function SidebarLayout() {
 															</Collapsible>
 														) : (
 															<SidebarMenuButton asChild>
-																<RippleButton
-																	variant='ghost'
-																	className='active:scale-95 transition-all p-0 font-normal w-full justify-start'
-																>
-																	<Link
-																		to={item.href || "#"}
-																		className='flex items-center justify-start p-2 w-full h-full'
+																<>
+																	<RippleButton
+																		variant='ghost'
+																		className={cn(
+																			"active:scale-95 transition-all p-0 font-normal w-full justify-start",
+																			location.pathname === item.href && "bg-indigo-100/40 border border-indigo-100 hover:bg-indigo-100"
+																		)}
 																	>
-																		<div className='flex gap-2 items-center'>
-																			{item.icon}
-																			<span>{item.title}</span>
-																		</div>
-																	</Link>
-																</RippleButton>
+																		<Link to={item.href || "#"} className='flex items-center justify-start p-2 w-full h-full'>
+																			<div className='flex gap-2 items-center'>
+																				{item.icon}
+																				<span>{item.title}</span>
+																			</div>
+																		</Link>
+																	</RippleButton>
+																	{location.pathname === item.href && (
+																		<m.div layoutId='activeItemIndicator' className='rounded-full absolute top-0 -left-1.5 h-full w-0.5 bg-indigo-500' />
+																	)}
+																</>
 															</SidebarMenuButton>
 														)}
 													</SidebarMenuItem>
@@ -152,15 +160,14 @@ function SidebarLayout() {
 							<SidebarMenuItem>
 								<DropdownMenu>
 									<DropdownMenuTrigger asChild>
-										<SidebarMenuButton>
-											<User2 />
-											{user ? (
-												user?.f_name + " " + user?.l_name
-											) : (
-												<LoaderCircle className='animate-spin' />
-											)}
-											<ChevronUp className='ml-auto' />
-										</SidebarMenuButton>
+										<div>
+											<SidebarMenuButton className={cn(location.pathname.startsWith("/dashboard/profile") && "bg-indigo-100/40 border border-indigo-100 hover:bg-indigo-100")}>
+												<User2 />
+												{user ? user?.f_name + " " + user?.l_name : <LoaderCircle className='animate-spin' />}
+												<ChevronUp className='ml-auto' />
+											</SidebarMenuButton>
+											{location.pathname.startsWith("/dashboard/profile") && <div className='rounded-full absolute top-0 -left-1.5 h-full w-0.5 bg-indigo-500' />}
+										</div>
 									</DropdownMenuTrigger>
 									<DropdownMenuContent side='top' className='w-[--radix-popper-anchor-width]'>
 										<DropdownMenuItem asChild>
@@ -176,9 +183,9 @@ function SidebarLayout() {
 					</SidebarFooter>
 				</Sidebar>
 
-				<div className='flex flex-1 flex-col'>
+				<div className='flex flex-1 flex-col min-w-0'>
 					<MobileHeader />
-					<main className='flex-1'>
+					<main className='flex-1 min-w-0'>
 						<Outlet />
 					</main>
 				</div>
@@ -205,6 +212,7 @@ function MobileHeader() {
 }
 
 type SubItem = {
+	id: string;
 	title: string;
 	href: string;
 	icon: JSX.Element;
@@ -212,6 +220,7 @@ type SubItem = {
 };
 
 type MenuItem = {
+	id: string;
 	title: string;
 	href?: string;
 	icon: JSX.Element;
@@ -232,6 +241,7 @@ const groups: Group[] = [
 		name: "App",
 		items: [
 			{
+				id: "dashboard",
 				title: "Dashboard",
 				href: "/dashboard",
 				icon: <LayoutGrid />,
@@ -243,15 +253,18 @@ const groups: Group[] = [
 		name: "Users",
 		items: [
 			{
+				id: "admin",
 				title: "Admin",
 				icon: <Shield />,
 				subitems: [
 					{
+						id: "view_admins",
 						title: "View Admins",
 						href: "/dashboard/admin/view",
 						icon: <Users />,
 					},
 					{
+						id: "add_admins",
 						title: "Add Admin",
 						href: "/dashboard/admin/add",
 						icon: <UserPlus />,
@@ -260,15 +273,18 @@ const groups: Group[] = [
 				],
 			},
 			{
+				id: "manager",
 				title: "Managers",
 				icon: <Briefcase />,
 				subitems: [
 					{
+						id: "view_managers",
 						title: "View Managers",
 						href: "/dashboard/manager/view",
 						icon: <Users />,
 					},
 					{
+						id: "add_managers",
 						title: "Add Manager",
 						href: "/dashboard/manager/add",
 						icon: <UserPlus />,
@@ -277,15 +293,18 @@ const groups: Group[] = [
 				],
 			},
 			{
+				id: "pharmacist",
 				title: "Pharmacists",
 				icon: <Bandage />,
 				subitems: [
 					{
+						id: "view_pharmacists",
 						title: "View Pharmacists",
 						href: "/dashboard/pharmacist/view",
 						icon: <Users />,
 					},
 					{
+						id: "add_pharmacists",
 						title: "Add Pharmacist",
 						href: "/dashboard/pharmacist/add",
 						icon: <UserPlus />,
@@ -294,15 +313,18 @@ const groups: Group[] = [
 				],
 			},
 			{
+				id: "salesman",
 				title: "Salesmen",
 				icon: <DollarSign />,
 				subitems: [
 					{
+						id: "view_salesmen",
 						title: "View Salesmen",
 						href: "/dashboard/salesman/view",
 						icon: <Users />,
 					},
 					{
+						id: "add_salesmen",
 						title: "Add Salesman",
 						href: "/dashboard/salesman/add",
 						icon: <UserPlus />,
@@ -317,12 +339,14 @@ const groups: Group[] = [
 		name: "Other",
 		items: [
 			{
+				id: "drugs",
 				title: "Drugs",
 				href: "/dashboard/drugs",
 				icon: <Pill />,
 				allowedRoles: [UserRole.ADMIN, UserRole.MANAGER, UserRole.PHARMACIST],
 			},
 			{
+				id: "orders",
 				title: "Orders",
 				href: "/dashboard/orders",
 				icon: <Tickets />,

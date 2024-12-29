@@ -18,6 +18,7 @@ function DrugsView() {
 			const transformedData = response.data.map((drug: any) => ({
 				id: drug.id,
 				name: drug.name,
+				manufacturer: drug.manufacturer,
 				description: drug.description,
 				price: drug.price,
 				quantity: drug.quantity,
@@ -42,19 +43,13 @@ function DrugsView() {
 			initial={{ opacity: 0, scale: 0.9 }}
 			animate={{ opacity: 1, scale: 1, transition: { ease: [0, 0.75, 0.25, 1] } }}
 			exit={{ opacity: 0, scale: 0.9, transition: { ease: [0.75, 0, 1, 0.25] } }}
-			className='flex-1 min-h-screen bg-gray-100 p-6'
+			className='flex flex-1 flex-col bg-gray-100 p-6 w-full overflow-x-hidden'
 		>
 			<header className='text-left mb-12'>
 				<h1 className='text-2xl font-bold'>View Drugs</h1>
 			</header>
-			<main className='w-full'>
-				{isLoading ? (
-					<div className='flex justify-center items-center'>
-						<LoaderCircle className='animate-spin' />
-					</div>
-				) : (
-					<DataTable columns={columns} data={data} />
-				)}
+			<main className='w-full min-w-0'>
+				<DataTable columns={columns} data={data} onDataChange={fetchData} isLoading={isLoading} />
 			</main>
 		</m.div>
 	);

@@ -1,7 +1,16 @@
 import { cn } from "@/lib/utils";
 import { X } from "lucide-react";
 import * as React from "react";
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "./dialog";
+import {
+	Dialog,
+	DialogClose,
+	DialogContent,
+	DialogDescription,
+	DialogHeader,
+	DialogOverlay,
+	DialogTitle,
+	DialogTrigger,
+} from "./dialog";
 
 type ImageViewerContextType = {
 	isOpen: boolean;
@@ -72,7 +81,14 @@ const ImageViewerContent = ({ title, description }: { title: string; description
 	);
 };
 
+const ImageViewerOverlay = React.forwardRef<
+	React.ElementRef<typeof DialogOverlay>,
+	React.ComponentPropsWithoutRef<typeof DialogOverlay>
+>(({ className, ...props }, ref) => <DialogOverlay ref={ref} className={cn("bg-black/80", className)} {...props} />);
+ImageViewerOverlay.displayName = "ImageViewerOverlay";
+
 ImageViewer.Trigger = ImageViewerTrigger;
 ImageViewer.Content = ImageViewerContent;
+ImageViewer.Overlay = ImageViewerOverlay;
 
 export { ImageViewer };
