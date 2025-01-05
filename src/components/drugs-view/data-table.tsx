@@ -15,7 +15,7 @@ import {
 } from "@tanstack/react-table";
 import axios from "axios";
 import { format } from "date-fns";
-import { ArrowDown, ArrowUp, ArrowUpDown, CalendarIcon, Loader, LoaderCircle, X } from "lucide-react";
+import { ArrowDown, ArrowUp, ArrowUpDown, CalendarIcon, LoaderCircle, X } from "lucide-react";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";

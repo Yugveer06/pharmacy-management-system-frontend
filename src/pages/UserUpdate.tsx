@@ -1,7 +1,9 @@
+import AuthError from "@/components/AuthError";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RippleButton } from "@/components/ui/ripple-button/ripple-button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
@@ -11,8 +13,6 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router";
 import { z } from "zod";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import AuthError from "@/components/AuthError";
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
 const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
@@ -73,6 +73,20 @@ function UserUpdate() {
 						Authorization: `Bearer ${token}`,
 					},
 				});
+
+				// Check if user has permission to update this user
+				const role = location.pathname.split("/")[2]; // Get role from URL
+				const roleMap = {
+					admin: 1,
+					manager: 2,
+					pharmacist: 3,
+					salesman: 4,
+				};
+
+				if (roleMap[role as keyof typeof roleMap] !== response?.data?.role_id) {
+					navigate("/404", { replace: true });
+					return;
+				}
 
 				if (response.data) {
 					const userData = response.data;
@@ -185,7 +199,7 @@ function UserUpdate() {
 			className='flex flex-1 flex-col bg-neutral-100 p-6'
 		>
 			<header className='text-left mb-12'>
-				<h1 className='text-2xl font-bold'>Edit Profile</h1>
+				<h1 className='text-2xl font-bold'>Edit User</h1>
 			</header>
 			{isLoading ? (
 				<div className='flex justify-center items-center'>
@@ -204,7 +218,7 @@ function UserUpdate() {
 								<span>Back</span>
 							</div>
 						</RippleButton>
-						<h1 className='text-lg sm:text-xl font-semibold'>Update your profile</h1>
+						<h1 className='text-lg sm:text-xl font-semibold'>Update User</h1>
 					</header>
 					<main className='p-3 sm:p-4'>
 						<Form {...form}>
@@ -338,6 +352,7 @@ function UserUpdate() {
 								</RippleButton>
 							</form>
 						</Form>
+						{error && <AuthError message={error} />}
 					</main>
 				</div>
 			)}

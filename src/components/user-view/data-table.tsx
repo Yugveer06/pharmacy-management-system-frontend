@@ -2,13 +2,15 @@ import { ColumnDef, flexRender, getCoreRowModel, useReactTable } from "@tanstack
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useAuth } from "@/contexts/AuthContext";
+import { UserRow } from "./columns";
+import { UserRole } from "@/types/auth";
 
-interface DataTableProps<TData, TValue> {
+interface DataTableProps<TData extends UserRow, TValue> {
 	columns: ColumnDef<TData, TValue>[];
 	data: TData[];
 }
 
-export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData, TValue>) {
+export function DataTable<TData extends UserRow, TValue>({ columns, data }: DataTableProps<TData, TValue>) {
 	const { user } = useAuth();
 	const table = useReactTable({
 		data,
@@ -16,11 +18,18 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
 		state: {
 			columnVisibility: {
 				role: false,
-				action: user?.role_id === 1,
+				action: hasActionPermission(user?.role_id ?? 1),
 			},
 		},
 		getCoreRowModel: getCoreRowModel(),
 	});
+
+	function hasActionPermission(userRole: UserRole) {
+		if (userRole === 1) return true;
+		if (userRole < data[0].role) return true;
+
+		return false;
+	}
 
 	return (
 		<div className='rounded-md border'>

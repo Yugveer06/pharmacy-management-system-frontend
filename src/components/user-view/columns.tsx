@@ -1,11 +1,22 @@
 import { ColumnDef } from "@tanstack/react-table";
-import { useState } from "react";
-import { RippleButton } from "../ui/ripple-button/ripple-button";
-import { Check, Clipboard, Pen, Trash } from "lucide-react";
-import { Link } from "react-router";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import axios from "axios";
+import { Check, Clipboard, LoaderCircle, Pen, Trash } from "lucide-react";
+import { useState } from "react";
+import { Link } from "react-router";
+import {
+	AlertDialog,
+	AlertDialogAction,
+	AlertDialogCancel,
+	AlertDialogContent,
+	AlertDialogDescription,
+	AlertDialogFooter,
+	AlertDialogHeader,
+	AlertDialogTitle,
+	AlertDialogTrigger,
+} from "../ui/alert-dialog";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { ImageViewer } from "../ui/image-viewer";
+import { RippleButton } from "../ui/ripple-button/ripple-button";
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
@@ -18,21 +29,19 @@ export type UserRow = {
 	role: number;
 };
 
-function handleUserDelete(id: string) {
-	axios
-		.delete(`/api/auth/delete-user/${id}`, {
+async function handleUserDelete(id: string) {
+	try {
+		const response = await axios.delete(`/api/auth/delete-user/${id}`, {
 			headers: {
 				Authorization: `Bearer ${localStorage.getItem("token")}`,
 			},
-		})
-		.then(response => {
-			console.log("User deleted successfully", response);
-			window.location.reload();
-		})
-		.catch(error => {
-			const message = error.response?.data?.message || "Failed to delete user";
-			console.error(message);
 		});
+		console.log("User deleted successfully", response);
+		window.location.reload();
+	} catch (error) {
+		const message = axios.isAxiosError(error) ? error.response?.data?.message : "Failed to delete user";
+		throw new Error(message);
+	}
 }
 
 export const columns: ColumnDef<UserRow>[] = [
@@ -121,8 +130,18 @@ export const columns: ColumnDef<UserRow>[] = [
 		cell: function Cell({ row }) {
 			const id: string = row.getValue("id");
 			const role: number = row.getValue("role");
-
+			const [deleteLoader, setDeleteLoader] = useState(false);
 			const roleMap = ["admin", "manager", "pharmacist", "salesman"];
+
+			async function onDelete() {
+				try {
+					setDeleteLoader(true);
+					await handleUserDelete(id);
+				} catch (error) {
+					setDeleteLoader(false);
+					console.error(error);
+				}
+			}
 
 			return (
 				<div className='flex lg:flex-row flex-col items-center gap-2'>
@@ -131,14 +150,42 @@ export const columns: ColumnDef<UserRow>[] = [
 							<Pen size={20} />
 						</Link>
 					</RippleButton>
-					<RippleButton
-						variant={"destructive"}
-						size={"sm"}
-						onClick={() => handleUserDelete(id)}
-						className='w-full lg:w-fit active:scale-95 transition-all h-auto border border-slate-200 px-2 py-1.5 dark:border-slate-700'
-					>
-						<Trash size={20} />
-					</RippleButton>
+					<AlertDialog>
+						<AlertDialogTrigger asChild>
+							<RippleButton
+								variant={"destructive"}
+								size={"sm"}
+								className='w-full lg:w-fit active:scale-95 transition-all h-auto border border-slate-200 px-2 py-1.5 dark:border-slate-700'
+							>
+								<Trash size={20} />
+							</RippleButton>
+						</AlertDialogTrigger>
+						<AlertDialogContent className='p-0 flex w-[96vw] max-w-[512px] flex-col rounded-lg border border-neutral-200 bg-neutral-50 gap-0'>
+							<AlertDialogHeader className='flex gap-4 rounded-t-lg bg-neutral-200/50 p-4'>
+								<AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+							</AlertDialogHeader>
+							<AlertDialogDescription className='p-4'>
+								This action cannot be undone. This will permanently delete the user account and remove their data from our servers.
+							</AlertDialogDescription>
+							<AlertDialogFooter className='p-4'>
+								<AlertDialogCancel asChild>
+									<RippleButton variant='outline' className='h-8 rounded-md px-3 text-xs'>
+										Cancel
+									</RippleButton>
+								</AlertDialogCancel>
+								<AlertDialogAction asChild>
+									<RippleButton
+										variant='destructive'
+										className='h-8 rounded-md px-3 text-xs bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90'
+										onClick={onDelete}
+										disabled={deleteLoader}
+									>
+										{deleteLoader ? <LoaderCircle className='animate-spin' /> : "Delete User"}
+									</RippleButton>
+								</AlertDialogAction>
+							</AlertDialogFooter>
+						</AlertDialogContent>
+					</AlertDialog>
 				</div>
 			);
 		},

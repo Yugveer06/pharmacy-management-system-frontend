@@ -35,6 +35,7 @@ const EditDrugDialog = ({ drug, isOpen, onClose, onDataChange }: { drug: DrugRow
 		resolver: zodResolver(drugSchema),
 		defaultValues: {
 			name: drug.name,
+			manufacturer: drug.manufacturer,
 			description: drug.description,
 			price: drug.price,
 			quantity: drug.quantity,
@@ -66,7 +67,7 @@ const EditDrugDialog = ({ drug, isOpen, onClose, onDataChange }: { drug: DrugRow
 			await onDataChange(); // Refresh data after editing
 			onClose();
 		} catch (error) {
-			console.log("Error updating");
+			console.error(error);
 		} finally {
 			setIsLoading(false);
 		}
@@ -87,6 +88,19 @@ const EditDrugDialog = ({ drug, isOpen, onClose, onDataChange }: { drug: DrugRow
 							render={({ field }) => (
 								<FormItem>
 									<FormLabel>Name</FormLabel>
+									<FormControl>
+										<Input {...field} />
+									</FormControl>
+									<FormMessage />
+								</FormItem>
+							)}
+						/>
+						<FormField
+							control={form.control}
+							name='manufacturer'
+							render={({ field }) => (
+								<FormItem>
+									<FormLabel>Manufacturer</FormLabel>
 									<FormControl>
 										<Input {...field} />
 									</FormControl>
@@ -197,6 +211,7 @@ const EditDrugDialog = ({ drug, isOpen, onClose, onDataChange }: { drug: DrugRow
 export type DrugRow = {
 	id: string;
 	name: string;
+	manufacturer: string;
 	description: string;
 	price: number;
 	quantity: number;
@@ -259,6 +274,10 @@ export const columns: ColumnDef<DrugRow>[] = [
 								<div className='flex flex-col gap-0.5'>
 									<span className='font-medium'>Name</span>
 									<span className='text-sm text-neutral-600'>{row.getValue("name")}</span>
+								</div>
+								<div className='flex flex-col gap-0.5'>
+									<span className='font-medium'>Manufacturer</span>
+									<span className='text-sm text-neutral-600'>{row.getValue("manufacturer")}</span>
 								</div>
 								<div className='flex flex-col gap-0.5'>
 									<span className='font-medium'>Description</span>

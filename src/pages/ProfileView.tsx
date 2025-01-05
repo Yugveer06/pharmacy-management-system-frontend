@@ -54,11 +54,7 @@ const roleMap: Role = {
 
 function ProfileSkeleton() {
 	return (
-		<m.div
-			initial={{ opacity: 0, scale: 0.9 }}
-			animate={{ opacity: 1, scale: 1, transition: { ease: [0, 0.75, 0.25, 1] } }}
-			className='flex flex-1 flex-col bg-neutral-100 p-6'
-		>
+		<m.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1, transition: { ease: [0, 0.75, 0.25, 1] } }} className='flex flex-1 flex-col bg-neutral-100 p-6'>
 			<header className='text-left mb-12'>
 				<h1 className='text-2xl font-bold'>Profile</h1>
 			</header>
@@ -170,7 +166,7 @@ export default function ProfileView() {
 	async function onSubmit(values: z.infer<typeof formSchema>) {
 		try {
 			setDeleteLoader(true);
-			const response = await axios.delete(`/api/auth/delete-user/${user?.id}`, {
+			const response = await axios.delete(`/api/auth/delete-own/${user?.id}`, {
 				data: {
 					password: values.password,
 				},
@@ -218,19 +214,13 @@ export default function ProfileView() {
 										</Avatar>
 									</ImageViewer.Trigger>
 									<ImageViewer.Overlay className='backdrop-blur-[36px] bg-neutral-950/5' />
-									<ImageViewer.Content
-										title='Profile Picture'
-										description={user.f_name + " " + user.l_name}
-									></ImageViewer.Content>
+									<ImageViewer.Content title='Profile Picture' description={user.f_name + " " + user.l_name}></ImageViewer.Content>
 								</ImageViewer>
 								<div className='flex flex-col items-start gap-2'>
 									<h2 className='text-2xl font-bold'>
 										{user.f_name} {user.l_name}
 									</h2>
-									<Badge
-										variant='default'
-										className='bg-indigo-500 hover:bg-indigo-600 cursor-default shadow-none'
-									>
+									<Badge variant='default' className='bg-indigo-500 hover:bg-indigo-600 cursor-default shadow-none'>
 										{roleMap[user.role_id]}
 									</Badge>
 								</div>
@@ -249,21 +239,11 @@ export default function ProfileView() {
 								<div className='flex flex-col items-start border-b border-b-neutral-100 pb-4'>
 									<span className='text-sm text-muted-foreground'>Role</span>
 									<div className='flex gap-1 items-center font-medium'>
-										<Badge
-											variant='default'
-											className='bg-indigo-500 hover:bg-indigo-600 cursor-default shadow-none'
-										>
+										<Badge variant='default' className='bg-indigo-500 hover:bg-indigo-600 cursor-default shadow-none'>
 											{user.role_id}
 										</Badge>
-										<Badge
-											variant='outline'
-											className='hover:bg-neutral-100 cursor-default shadow-none p-0 active:scale-95 transition-all'
-										>
-											<Link
-												to={`/dashboard/${roleMap[user.role_id].toLowerCase()}/view`}
-												draggable='false'
-												className='p-0'
-											>
+										<Badge variant='outline' className='hover:bg-neutral-100 cursor-default shadow-none p-0 active:scale-95 transition-all'>
+											<Link to={`/dashboard/${roleMap[user.role_id].toLowerCase()}/view`} draggable='false' className='p-0'>
 												<RippleButton variant='ghost' className='text-xs w-fit h-fit px-2.5 py-0.5'>
 													{roleMap[user.role_id]}
 												</RippleButton>
@@ -279,21 +259,14 @@ export default function ProfileView() {
 
 							<div className='flex flex-col gap-2 justify-center mt-8'>
 								<RippleButton className='active:scale-[0.98] transition-all p-0 w-full hover:bg-indigo-500'>
-									<Link
-										to='/dashboard/profile/edit'
-										className='w-full h-full flex items-center justify-center p-2'
-										draggable='false'
-									>
+									<Link to='/dashboard/profile/edit' className='w-full h-full flex items-center justify-center p-2' draggable='false'>
 										Edit Profile
 									</Link>
 								</RippleButton>
 
 								<AlertDialog>
 									<AlertDialogTrigger asChild>
-										<RippleButton
-											variant='destructive'
-											className='active:scale-[0.98] transition-all w-full'
-										>
+										<RippleButton variant='destructive' className='active:scale-[0.98] transition-all w-full'>
 											Delete account
 										</RippleButton>
 									</AlertDialogTrigger>
@@ -303,10 +276,7 @@ export default function ProfileView() {
 										</AlertDialogHeader>
 										<AlertDialogDescription asChild className='p-4'>
 											<div>
-												<span>
-													This action cannot be undone. This will permanently delete your account and
-													remove your data from our servers.
-												</span>
+												<span>This action cannot be undone. This will permanently delete your account and remove your data from our servers.</span>
 												<Form {...form}>
 													<form onSubmit={form.handleSubmit(onSubmit)}>
 														<FormField
@@ -332,11 +302,7 @@ export default function ProfileView() {
 																					setShowPassword(!showPassword);
 																				}}
 																			>
-																				{showPassword ? (
-																					<Eye size={16} />
-																				) : (
-																					<EyeOff size={16} />
-																				)}
+																				{showPassword ? <Eye size={16} /> : <EyeOff size={16} />}
 																			</RippleButton>
 																		</div>
 																	</FormControl>
@@ -362,11 +328,7 @@ export default function ProfileView() {
 													onClick={form.handleSubmit(onSubmit)}
 													disabled={deleteLoader}
 												>
-													{deleteLoader ? (
-														<LoaderCircle className='animate-spin' />
-													) : (
-														"Delete Account"
-													)}
+													{deleteLoader ? <LoaderCircle className='animate-spin' /> : "Delete Account"}
 													<span>Delete Account</span>
 												</RippleButton>
 											</AlertDialogAction>

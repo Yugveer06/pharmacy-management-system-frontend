@@ -1,15 +1,14 @@
-import { useState, useEffect } from "react";
 import { columns } from "@/components/drugs-view/columns";
+import { DataTable } from "@/components/drugs-view/data-table";
 import axios from "axios";
 import { motion as m } from "motion/react";
-import { LoaderCircle } from "lucide-react";
-import { DataTable } from "@/components/drugs-view/data-table";
+import { useCallback, useEffect, useState } from "react";
 
 function DrugsView() {
 	const [data, setData] = useState([]);
 	const [isLoading, setIsLoading] = useState(true);
 
-	const fetchData = async () => {
+	const fetchDrugs = useCallback(async () => {
 		try {
 			setIsLoading(true);
 			const response = await axios.get("/api/drugs");
@@ -28,15 +27,15 @@ function DrugsView() {
 
 			setData(transformedData);
 		} catch (error) {
-			console.error("Error fetching data:", error);
+			console.error("Error fetching drugs:", error);
 		} finally {
 			setIsLoading(false);
 		}
-	};
+	}, []);
 
 	useEffect(() => {
-		fetchData();
-	}, []);
+		fetchDrugs();
+	}, [fetchDrugs]);
 
 	return (
 		<m.div
@@ -49,7 +48,7 @@ function DrugsView() {
 				<h1 className='text-2xl font-bold'>View Drugs</h1>
 			</header>
 			<main className='w-full min-w-0'>
-				<DataTable columns={columns} data={data} onDataChange={fetchData} isLoading={isLoading} />
+				<DataTable columns={columns} data={data} onDataChange={fetchDrugs} isLoading={isLoading} />
 			</main>
 		</m.div>
 	);

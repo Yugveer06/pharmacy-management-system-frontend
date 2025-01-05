@@ -77,11 +77,7 @@ function Login() {
 		<div className='h-screen w-screen flex items-center justify-center bg-neutral-100'>
 			<div className='z-10 flex w-[96vw] max-w-[512px] flex-col rounded-lg border border-neutral-200 bg-neutral-50'>
 				<header className='flex items-center gap-4 rounded-t-lg bg-neutral-200/50 p-4'>
-					<RippleButton
-						variant={"outline"}
-						className='active:scale-95 transition-all h-fit px-2 py-1 text-xs shadow-none hover:border-neutral-300'
-						onClick={() => navigate("/")}
-					>
+					<RippleButton variant={"outline"} className='active:scale-95 transition-all h-fit px-2 py-1 text-xs shadow-none hover:border-neutral-300' onClick={() => navigate("/")}>
 						<div className='flex items-center justify-center gap-2'>
 							<ChevronLeft size={8} />
 							<span>Home</span>
@@ -113,11 +109,7 @@ function Login() {
 										<FormLabel>Password</FormLabel>
 										<FormControl>
 											<div className='relative flex w-full gap-1'>
-												<Input
-													type={showPassword ? "text" : "password"}
-													placeholder='your password'
-													{...field}
-												/>
+												<Input type={showPassword ? "text" : "password"} placeholder='your password' {...field} />
 												<RippleButton
 													type='button'
 													className='active:scale-95 transition-all flex w-8 items-center justify-center'
@@ -137,7 +129,7 @@ function Login() {
 									</FormItem>
 								)}
 							/>
-							<RippleButton className='active:scale-[0.98] transition-all w-full' type='submit'>
+							<RippleButton className='active:scale-[0.98] transition-all w-full' type='submit' disabled={loginLoading}>
 								<div>{loginLoading ? <LoaderCircle className='animate-spin' /> : <span>Submit</span>}</div>
 							</RippleButton>
 						</form>
