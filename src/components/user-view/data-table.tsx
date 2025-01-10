@@ -19,6 +19,8 @@ export function DataTable<TData extends UserRow, TValue>({ columns, data }: Data
 			columnVisibility: {
 				role: false,
 				action: hasActionPermission(user?.role_id ?? 1),
+				email: hasActionPermission(user?.role_id ?? 1),
+				phone: hasActionPermission(user?.role_id ?? 1),
 			},
 		},
 		getCoreRowModel: getCoreRowModel(),

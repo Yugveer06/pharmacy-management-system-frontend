@@ -99,6 +99,7 @@ export const columns: ColumnDef<UserRow>[] = [
 								</AvatarFallback>
 							</Avatar>
 						</ImageViewer.Trigger>
+						<ImageViewer.Overlay className='backdrop-blur-[36px] bg-neutral-950/5' />
 						<ImageViewer.Content title='Profile Picture' description={row.getValue("name")}></ImageViewer.Content>
 					</ImageViewer>
 				</div>
@@ -108,14 +109,23 @@ export const columns: ColumnDef<UserRow>[] = [
 	{
 		accessorKey: "name",
 		header: "Name",
+		cell: function Cell({ row }) {
+			return <div className='text-left'>{row.getValue("name") as string}</div>;
+		},
 	},
 	{
 		accessorKey: "email",
 		header: "Email",
+		cell: function Cell({ row }) {
+			return <div className='text-left'>{row.getValue("email") as string}</div>;
+		},
 	},
 	{
 		accessorKey: "phone",
 		header: "Phone",
+		cell: function Cell({ row }) {
+			return <div className='text-left'>{row.getValue("phone") as string}</div>;
+		},
 	},
 	{
 		accessorKey: "role",

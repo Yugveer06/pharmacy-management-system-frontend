@@ -1,10 +1,10 @@
-import { useState, useEffect, useMemo } from "react";
 import { columns } from "@/components/user-view/columns";
 import { DataTable } from "@/components/user-view/data-table";
-import { useLocation } from "react-router";
 import axios from "axios";
-import { motion as m } from "motion/react";
 import { LoaderCircle } from "lucide-react";
+import { motion as m } from "motion/react";
+import { useEffect, useState } from "react";
+import { useLocation } from "react-router";
 
 function UserView() {
 	const [data, setData] = useState([]);
