@@ -1,50 +1,65 @@
-# React + TypeScript + Vite
+# Pharmacy Management System
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern web-based pharmacy management system built with cutting-edge technologies to streamline pharmacy operations.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+-   User Authentication
+-   User management (Admin, Manager, Pharmacist, Salesman)
+-   Authorized acess to individual users
+-   Manage Drugs
+-   Manage Orders
 
-## Expanding the ESLint configuration
+## Prerequisites
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+-   Node.js (v14 or higher)
+-   npm (v6 or higher)
+-   Git
 
-- Configure the top-level `parserOptions` property like this:
+## Getting Started
+1. Make sure to first setup the [backend](https://github.com/Yugveer06/pharmacy-management-system-backend)
+2. Clone the repository:
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+```bash
+git clone https://github.com/yourusername/pharmacy-management-system-frontend.git
+cd pharmacy-management-system
 ```
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+3. Install dependencies:
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
-
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
+```bash
+npm install --legacy-peer-deps
 ```
+4. Setup environment variables by using the `.env.example` file.
+
+5. Start the development server:
+
+```bash
+npm run dev
+```
+
+The application will be available at `http://localhost:3000`
+
+## Tech Stack
+
+-   Frontend: React.js (Typescript + SWR)
+-   Backend: Node.js/Express
+-   Database: PostGresSQL
+-   Authentication: JWT
+
+## Contributing
+
+**Note:** This is just a college project, so this repo won't remain active.
+
+Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
+
+## Screenshots
+![image](https://github.com/user-attachments/assets/52f89f11-1ece-4ba9-a31b-59f1ae43c202)
+![image](https://github.com/user-attachments/assets/875f52a7-03b7-42cc-9e90-0ab58b27e546)
+![image](https://github.com/user-attachments/assets/02047f9c-03af-4e92-a250-d3550355b429)
+
+
+
+## License
+
+[MIT](https://choosealicense.com/licenses/mit/)
