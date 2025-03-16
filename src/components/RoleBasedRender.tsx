@@ -16,18 +16,3 @@ export const RoleBasedRender = ({ children, allowedRoles }: RoleBasedProps) => {
 
 	return <>{children}</>;
 };
-
-// Usage example:
-const ExampleComponent = () => {
-	return (
-		<div>
-			<RoleBasedRender allowedRoles={[UserRole.ADMIN]}>
-				<button>Admin Only Button</button>
-			</RoleBasedRender>
-
-			<RoleBasedRender allowedRoles={[UserRole.ADMIN, UserRole.PHARMACIST]}>
-				<div>Visible to both Admin and Pharmacist</div>
-			</RoleBasedRender>
-		</div>
-	);
-};

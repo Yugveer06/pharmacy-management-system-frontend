@@ -7,7 +7,6 @@ import SidebarLayout from "@/components/layouts/SidebarLayout";
 
 // Components
 import ProtectedRoute from "@/components/ProtectedRoute";
-import { ThemeProvider } from "@/components/ThemeProvider";
 
 // Contexts
 import { AuthProvider } from "@/contexts/AuthContext";
@@ -39,8 +38,14 @@ function App() {
 					<Route path='/' element={<NavbarLayout />}>
 						<Route index element={<Home />} />
 						<Route path='login' element={<Login />} />
-						<Route path='forgot-password' element={<ForgotPassword />} />
-						<Route path='reset-password/:token' element={<ResetPassword />} />
+						<Route
+							path='forgot-password'
+							element={<ForgotPassword />}
+						/>
+						<Route
+							path='reset-password/:token'
+							element={<ResetPassword />}
+						/>
 						<Route path='*' element={<NotFound />} />
 					</Route>
 					<Route path='/dashboard' element={<SidebarLayout />}>

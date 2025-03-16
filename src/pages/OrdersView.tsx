@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { columns } from "@/components/orders-view/columns";
 import axios from "axios";
 import { motion as m } from "motion/react";
@@ -9,7 +9,7 @@ function OrdersView() {
 	const [data, setData] = useState([]);
 	const [isLoading, setIsLoading] = useState(true);
 
-	const fetchData = async () => {
+	const fetchData = useCallback(async () => {
 		try {
 			setIsLoading(true);
 			const response = await axios.get("/api/orders");
@@ -28,30 +28,37 @@ function OrdersView() {
 		} finally {
 			setIsLoading(false);
 		}
-	};
+	}, []);
 
 	useEffect(() => {
 		fetchData();
-	}, []);
+	}, [fetchData]);
 
 	return (
 		<m.div
 			initial={{ opacity: 0, scale: 0.9 }}
-			animate={{ opacity: 1, scale: 1, transition: { ease: [0, 0.75, 0.25, 1] } }}
-			exit={{ opacity: 0, scale: 0.9, transition: { ease: [0.75, 0, 1, 0.25] } }}
+			animate={{
+				opacity: 1,
+				scale: 1,
+				transition: { ease: [0, 0.75, 0.25, 1] },
+			}}
+			exit={{
+				opacity: 0,
+				scale: 0.9,
+				transition: { ease: [0.75, 0, 1, 0.25] },
+			}}
 			className='flex-1 min-h-screen bg-gray-100 p-6'
 		>
 			<header className='text-left mb-12'>
 				<h1 className='text-2xl font-bold'>View Orders</h1>
 			</header>
 			<main className='w-full'>
-				{isLoading ? (
-					<div className='flex justify-center items-center'>
-						<LoaderCircle className='animate-spin' />
-					</div>
-				) : (
-					<DataTable columns={columns} data={data} />
-				)}
+				<DataTable
+					columns={columns}
+					data={data}
+					onDataChange={fetchData}
+					isLoading={isLoading}
+				/>
 			</main>
 		</m.div>
 	);
